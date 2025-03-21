@@ -1,11 +1,13 @@
 package com.example.flashcards.ui.vocabulary
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -20,13 +22,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.flashcards.data.model.Vocabulary
 import com.example.flashcards.repository.VocabularyRepository
 import com.example.flashcards.ui.MockVocabularyDao
 
 @Composable
-fun VocabularyListScreen(viewModel: VocabularyViewModel = viewModel()) {
+fun VocabularyListScreen(
+    viewModel: VocabularyViewModel = viewModel(),
+    navController: NavController,
+) {
     val words by viewModel.vocabularyList.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var selectedWord by remember { mutableStateOf<Vocabulary?>(null) }
@@ -36,6 +44,17 @@ fun VocabularyListScreen(viewModel: VocabularyViewModel = viewModel()) {
         floatingActionButton = {
             FloatingActionButton(onClick = { showDialog = true }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Word")
+            }
+        },
+        bottomBar = {
+            Button(
+                onClick = { navController.navigate("quiz") },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+            ) {
+                Text("Start Quiz")
             }
         },
     ) { padding ->
@@ -73,9 +92,14 @@ fun VocabularyListScreen(viewModel: VocabularyViewModel = viewModel()) {
             word = selectedWord!!,
             onDismiss = { selectedWord = null },
             onSave = { korean, english ->
-                viewModel.updateWord(selectedWord!!.copy(koreanWord = korean, englishMeaning = english))
+                viewModel.updateWord(
+                    selectedWord!!.copy(
+                        koreanWord = korean,
+                        englishMeaning = english,
+                    ),
+                )
                 selectedWord = null
-            }
+            },
         )
     }
 }
@@ -93,5 +117,5 @@ fun VocabularyTopBar() {
 fun PreviewVocabularyListScreen() {
     val mockViewModel = VocabularyViewModel(VocabularyRepository(MockVocabularyDao()))
 
-    VocabularyListScreen(viewModel = mockViewModel)
+    VocabularyListScreen(viewModel = mockViewModel, navController = rememberNavController())
 }
