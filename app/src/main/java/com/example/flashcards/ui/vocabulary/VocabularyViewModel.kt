@@ -4,21 +4,32 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flashcards.data.model.Vocabulary
 import com.example.flashcards.repository.VocabularyRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class VocabularyViewModel(private val repository: VocabularyRepository) : ViewModel() {
-    val allWords = repository.allWords
-    val favoriteWords = repository.favoriteWords
 
-    fun addWord(word: Vocabulary) {
+    private val _vocabularyList = MutableStateFlow<List<Vocabulary>>(emptyList())
+    val vocabularyList: StateFlow<List<Vocabulary>> = _vocabularyList
+
+    init {
+        loadVocabulary()
+    }
+
+    private fun loadVocabulary() {
         viewModelScope.launch {
-            repository.insertWord(word)
+            repository.allWords.collectLatest { words ->
+                _vocabularyList.value = words
+            }
         }
     }
 
-    fun updateWord(word: Vocabulary) {
+    fun toggleFavorite(word: Vocabulary) {
         viewModelScope.launch {
-            repository.updateWord(word)
+            val updatedWord = word.copy(isFavorite = !word.isFavorite)
+            repository.updateWord(updatedWord)
         }
     }
 
