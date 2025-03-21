@@ -9,8 +9,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class VocabularyViewModel(private val repository: VocabularyRepository) : ViewModel() {
-
+class VocabularyViewModel(
+    private val repository: VocabularyRepository,
+) : ViewModel() {
     private val _vocabularyList = MutableStateFlow<List<Vocabulary>>(emptyList())
     val vocabularyList: StateFlow<List<Vocabulary>> = _vocabularyList
 
@@ -36,6 +37,22 @@ class VocabularyViewModel(private val repository: VocabularyRepository) : ViewMo
     fun deleteWord(word: Vocabulary) {
         viewModelScope.launch {
             repository.deleteWord(word)
+        }
+    }
+
+    fun addWord(
+        korean: String,
+        english: String,
+    ) {
+        viewModelScope.launch {
+            val newWord =
+                Vocabulary(
+                    id = 0, // Room will auto-generate ID
+                    koreanWord = korean,
+                    englishMeaning = english,
+                    isFavorite = false,
+                )
+            repository.insertWord(newWord)
         }
     }
 }
