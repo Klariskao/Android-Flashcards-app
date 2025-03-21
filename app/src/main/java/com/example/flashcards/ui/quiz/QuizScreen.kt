@@ -87,11 +87,11 @@ fun QuizScreen(
                                 when {
                                     quizState.selectedAnswer == option && option == quizState.correctAnswer -> Color.Green
                                     quizState.selectedAnswer == option && option != quizState.correctAnswer -> Color.Red
-                                    else -> MaterialTheme.colorScheme.surface
+                                    else -> MaterialTheme.colorScheme.primaryContainer
                                 },
                         ),
                 ) {
-                    Text(option, color = Color.White, fontSize = 18.sp)
+                    Text(option, color = Color.Black, fontSize = 18.sp)
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
