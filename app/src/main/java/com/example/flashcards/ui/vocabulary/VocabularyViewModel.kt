@@ -55,4 +55,10 @@ class VocabularyViewModel(
             repository.insertWord(newWord)
         }
     }
+
+    fun updateWord(updatedWord: Vocabulary) {
+        viewModelScope.launch {
+            repository.updateWord(updatedWord)
+        }
+    }
 }
