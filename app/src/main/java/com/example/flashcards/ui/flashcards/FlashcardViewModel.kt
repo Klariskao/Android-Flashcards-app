@@ -4,14 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flashcards.data.model.Vocabulary
 import com.example.flashcards.repository.VocabularyRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class FlashcardViewModel @Inject constructor(private val repository: VocabularyRepository) : ViewModel() {
+class FlashcardViewModel(
+    private val repository: VocabularyRepository,
+) : ViewModel() {
     private val _words = MutableStateFlow<List<Vocabulary>>(emptyList())
     val words: StateFlow<List<Vocabulary>> = _words
 

@@ -4,7 +4,9 @@ import com.example.flashcards.data.local.VocabularyDao
 import com.example.flashcards.data.model.Vocabulary
 import kotlinx.coroutines.flow.Flow
 
-class VocabularyRepository(private val vocabularyDao: VocabularyDao) {
+class VocabularyRepository(
+    private val vocabularyDao: VocabularyDao,
+) {
     val allWords: Flow<List<Vocabulary>> = vocabularyDao.getAllWords()
     val favoriteWords: Flow<List<Vocabulary>> = vocabularyDao.getFavoriteWords()
 
@@ -20,7 +22,5 @@ class VocabularyRepository(private val vocabularyDao: VocabularyDao) {
         vocabularyDao.deleteWord(word)
     }
 
-    fun getWordsByCategory(category: String): Flow<List<Vocabulary>> {
-        return vocabularyDao.getWordsByCategory(category)
-    }
+    fun getWordsByCategory(category: String): Flow<List<Vocabulary>> = vocabularyDao.getWordsByCategory(category)
 }

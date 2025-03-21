@@ -14,16 +14,17 @@ abstract class VocabularyDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: VocabularyDatabase? = null
 
-        fun getDatabase(context: Context): VocabularyDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    VocabularyDatabase::class.java,
-                    "vocabulary_db"
-                ).build()
+        fun getDatabase(context: Context): VocabularyDatabase =
+            INSTANCE ?: synchronized(this) {
+                val instance =
+                    Room
+                        .databaseBuilder(
+                            context.applicationContext,
+                            VocabularyDatabase::class.java,
+                            "vocabulary_db",
+                        ).build()
                 INSTANCE = instance
                 instance
             }
-        }
     }
 }

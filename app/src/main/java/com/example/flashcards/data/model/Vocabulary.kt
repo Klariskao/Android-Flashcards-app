@@ -10,5 +10,5 @@ data class Vocabulary(
     val englishMeaning: String,
     val category: String = "General",
     val isFavorite: Boolean = false,
-    val score: Int = 0
+    val score: Int = 0,
 )

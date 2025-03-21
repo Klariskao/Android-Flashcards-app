@@ -12,13 +12,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface VocabularyDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWord(word: Vocabulary)
+    suspend fun insertWord(word: Vocabulary): Long // Returns the inserted row ID
 
     @Update
-    suspend fun updateWord(word: Vocabulary)
+    suspend fun updateWord(word: Vocabulary): Int // Returns number of rows updated
 
     @Delete
-    suspend fun deleteWord(word: Vocabulary)
+    suspend fun deleteWord(word: Vocabulary): Int // Returns number of rows deleted
 
     @Query("SELECT * FROM vocabulary ORDER BY koreanWord ASC")
     fun getAllWords(): Flow<List<Vocabulary>>
