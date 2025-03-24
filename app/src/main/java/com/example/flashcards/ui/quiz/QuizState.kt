@@ -9,4 +9,6 @@ data class QuizState(
     val score: Int = 0,
     val timeLeft: Int = 30,
     val isTimeUp: Boolean = false,
+    val questionCount: Int = 0,
+    val isGameOver: Boolean = false,
 )

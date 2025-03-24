@@ -48,7 +48,7 @@ fun VocabularyListScreen(
         },
         bottomBar = {
             Button(
-                onClick = { navController.navigate("quiz") },
+                onClick = { navController.navigate("quiz_screen") },
                 modifier =
                     Modifier
                         .fillMaxWidth()

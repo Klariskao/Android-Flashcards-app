@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -29,6 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.flashcards.repository.VocabularyRepository
 import com.example.flashcards.ui.MockVocabularyDao
 
@@ -36,97 +39,107 @@ import com.example.flashcards.ui.MockVocabularyDao
 @Composable
 fun QuizScreen(
     viewModel: QuizViewModel = viewModel(),
-    onBackClick: () -> Unit,
+    navController: NavController,
 ) {
     val quizState by viewModel.quizState.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Timed Quiz") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-            )
-        },
-    ) { padding ->
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            // Timer
-            Text(
-                text = "Time Left: ${quizState.timeLeft}s",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = if (quizState.timeLeft <= 5) Color.Red else Color.Black,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Time’s Up Message
-            if (quizState.isTimeUp) {
-                Text(
-                    text = "Time’s Up!",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Red,
+    if (quizState.isGameOver) {
+        LaunchedEffect(Unit) {
+            navController.navigate("game_over/${quizState.score}")
+        }
+    } else {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Timed Quiz") },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    },
                 )
+            },
+        ) { padding ->
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                // Timer
+                Text(
+                    text = "Time Left: ${quizState.timeLeft}s",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = if (quizState.timeLeft <= 5) Color.Red else Color.Black,
+                )
+
                 Spacer(modifier = Modifier.height(8.dp))
-            }
 
-            Text(
-                text = "What is the translation of:",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = quizState.currentWord,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            quizState.options.forEach { option ->
-                Button(
-                    onClick = { viewModel.checkAnswer(option) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor =
-                                when {
-                                    quizState.selectedAnswer == option && option == quizState.correctAnswer -> Color.Green
-                                    quizState.selectedAnswer == option && option != quizState.correctAnswer -> Color.Red
-                                    else -> MaterialTheme.colorScheme.primaryContainer
-                                },
-                        ),
-                ) {
-                    Text(option, color = Color.Black, fontSize = 18.sp)
+                // Time’s Up Message
+                if (quizState.isTimeUp) {
+                    Text(
+                        text = "Time’s Up!",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Red,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
+                Text(
+                    text = "What is the translation of:",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+
                 Spacer(modifier = Modifier.height(8.dp))
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = quizState.currentWord,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
 
-            Text(text = "Score: ${quizState.score}", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+                quizState.options.forEach { option ->
+                    Button(
+                        onClick = { viewModel.checkAnswer(option) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor =
+                                    when {
+                                        quizState.selectedAnswer == option && option == quizState.correctAnswer -> Color.Green
+                                        quizState.selectedAnswer == option && option != quizState.correctAnswer -> Color.Red
+                                        else -> MaterialTheme.colorScheme.primaryContainer
+                                    },
+                            ),
+                    ) {
+                        Text(option, color = Color.Black, fontSize = 18.sp)
+                    }
 
-            Button(onClick = { viewModel.nextQuestion() }) {
-                Text("Next Question")
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Score: ${quizState.score}",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(onClick = { viewModel.nextQuestion() }) {
+                    Text("Next Question")
+                }
             }
         }
     }
@@ -137,5 +150,5 @@ fun QuizScreen(
 fun PreviewQuizScreen() {
     val mockViewModel = QuizViewModel(VocabularyRepository(MockVocabularyDao()))
 
-    QuizScreen(mockViewModel, {})
+    QuizScreen(mockViewModel, navController = rememberNavController())
 }

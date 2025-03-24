@@ -19,6 +19,7 @@ class QuizViewModel(
 
     private var allWords: List<Vocabulary> = emptyList()
     private var timerJob: Job? = null
+    private val maxQuestions = 10 // End quiz after 10 questions
 
     init {
         viewModelScope.launch {
@@ -31,6 +32,11 @@ class QuizViewModel(
 
     fun nextQuestion() {
         timerJob?.cancel() // Cancel any existing timer
+
+        if (_quizState.value.questionCount >= maxQuestions) {
+            _quizState.value = _quizState.value.copy(isGameOver = true)
+            return
+        }
 
         if (allWords.isNotEmpty()) {
             val randomWord = allWords.random()
@@ -52,10 +58,16 @@ class QuizViewModel(
                     correctAnswer = correctAnswer,
                     options = (incorrectAnswers + correctAnswer).shuffled(), // Shuffle options
                     isKoreanToEnglish = isKoreanToEnglish,
+                    questionCount = _quizState.value.questionCount + 1,
                 )
 
             startTimer()
         }
+    }
+
+    fun restartQuiz() {
+        _quizState.value = QuizState()
+        nextQuestion()
     }
 
     private fun startTimer() {
