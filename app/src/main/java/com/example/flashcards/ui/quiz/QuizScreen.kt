@@ -43,7 +43,7 @@ fun QuizScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Quiz") },
+                title = { Text("Timed Quiz") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -61,6 +61,27 @@ fun QuizScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
+            // Timer
+            Text(
+                text = "Time Left: ${quizState.timeLeft}s",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (quizState.timeLeft <= 5) Color.Red else Color.Black,
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Time’s Up Message
+            if (quizState.isTimeUp) {
+                Text(
+                    text = "Time’s Up!",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Red,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
             Text(
                 text = "What is the translation of:",
                 fontSize = 18.sp,
@@ -73,6 +94,7 @@ fun QuizScreen(
                 text = quizState.currentWord,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
             )
 
             Spacer(modifier = Modifier.height(16.dp))

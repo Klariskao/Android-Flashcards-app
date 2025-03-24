@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flashcards.data.model.Vocabulary
 import com.example.flashcards.repository.VocabularyRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,6 +18,7 @@ class QuizViewModel(
     val quizState: StateFlow<QuizState> = _quizState
 
     private var allWords: List<Vocabulary> = emptyList()
+    private var timerJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -27,6 +30,8 @@ class QuizViewModel(
     }
 
     fun nextQuestion() {
+        timerJob?.cancel() // Cancel any existing timer
+
         if (allWords.isNotEmpty()) {
             val randomWord = allWords.random()
             val isKoreanToEnglish =
@@ -48,10 +53,30 @@ class QuizViewModel(
                     options = (incorrectAnswers + correctAnswer).shuffled(), // Shuffle options
                     isKoreanToEnglish = isKoreanToEnglish,
                 )
+
+            startTimer()
         }
     }
 
+    private fun startTimer() {
+        timerJob =
+            viewModelScope.launch {
+                for (i in 30 downTo 0) {
+                    delay(1000L)
+                    _quizState.value = _quizState.value.copy(timeLeft = i)
+
+                    if (i == 0) {
+                        _quizState.value = _quizState.value.copy(isTimeUp = true)
+                        delay(1000L) // Show "Time’s Up!" for 1 sec
+                        nextQuestion()
+                    }
+                }
+            }
+    }
+
     fun checkAnswer(selectedAnswer: String) {
+        timerJob?.cancel() // Stop the timer if the user answers early
+
         _quizState.value =
             _quizState.value.copy(
                 selectedAnswer = selectedAnswer,
@@ -62,5 +87,10 @@ class QuizViewModel(
                     _quizState.value.score
                 },
             )
+
+        viewModelScope.launch {
+            delay(1000L) // Pause for 1 second to show feedback
+            nextQuestion()
+        }
     }
 }
