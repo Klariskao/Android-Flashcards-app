@@ -30,5 +30,9 @@ class VocabularyRepository(
         vocabularyDao.decreaseScore(wordId)
     }
 
+    suspend fun getAllWordsSortedByScoreDesc(): List<Vocabulary> = vocabularyDao.getAllWordsSortedByScoreDesc()
+
+    suspend fun getAllWordsSortedByScoreAsc(): List<Vocabulary> = vocabularyDao.getAllWordsSortedByScoreAsc()
+
     fun getWordsByCategory(category: String): Flow<List<Vocabulary>> = vocabularyDao.getWordsByCategory(category)
 }

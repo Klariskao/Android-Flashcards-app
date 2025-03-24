@@ -15,6 +15,8 @@ class VocabularyViewModel(
     private val _vocabularyList = MutableStateFlow<List<Vocabulary>>(emptyList())
     val vocabularyList: StateFlow<List<Vocabulary>> = _vocabularyList
 
+    private var isDescending = true
+
     init {
         loadVocabulary()
     }
@@ -25,6 +27,11 @@ class VocabularyViewModel(
                 _vocabularyList.value = words
             }
         }
+    }
+
+    fun toggleSortOrder() {
+        isDescending = !isDescending
+        getWordsSortedByScore(isDescending)
     }
 
     fun toggleFavorite(word: Vocabulary) {
@@ -59,6 +66,16 @@ class VocabularyViewModel(
     fun updateWord(updatedWord: Vocabulary) {
         viewModelScope.launch {
             repository.updateWord(updatedWord)
+        }
+    }
+
+    private fun getWordsSortedByScore(isDecs: Boolean) {
+        viewModelScope.launch {
+            if (isDecs) {
+                _vocabularyList.value = repository.getAllWordsSortedByScoreDesc()
+            } else {
+                _vocabularyList.value = repository.getAllWordsSortedByScoreAsc()
+            }
         }
     }
 }

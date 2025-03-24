@@ -11,7 +11,12 @@ class MockVocabularyDao : VocabularyDao {
         MutableStateFlow(
             listOf(
                 Vocabulary(id = 1, koreanWord = "사과", englishMeaning = "Apple", isFavorite = true),
-                Vocabulary(id = 2, koreanWord = "바나나", englishMeaning = "Banana", isFavorite = false),
+                Vocabulary(
+                    id = 2,
+                    koreanWord = "바나나",
+                    englishMeaning = "Banana",
+                    isFavorite = false,
+                ),
                 Vocabulary(id = 3, koreanWord = "고양이", englishMeaning = "Cat", isFavorite = true),
             ),
         )
@@ -25,6 +30,10 @@ class MockVocabularyDao : VocabularyDao {
     override suspend fun increaseScore(wordId: Int) {}
 
     override suspend fun decreaseScore(wordId: Int) {}
+
+    override suspend fun getAllWordsSortedByScoreDesc(): List<Vocabulary> = emptyList()
+
+    override suspend fun getAllWordsSortedByScoreAsc(): List<Vocabulary> = emptyList()
 
     override suspend fun insertWord(word: Vocabulary): Long = 0L
 

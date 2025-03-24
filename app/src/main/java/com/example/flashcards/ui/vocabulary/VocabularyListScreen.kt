@@ -1,5 +1,7 @@
 package com.example.flashcards.ui.vocabulary
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,7 +42,7 @@ fun VocabularyListScreen(
     var selectedWord by remember { mutableStateOf<Vocabulary?>(null) }
 
     Scaffold(
-        topBar = { VocabularyTopBar() },
+        topBar = { VocabularyTopBar(viewModel) },
         floatingActionButton = {
             FloatingActionButton(onClick = { showDialog = true }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Word")
@@ -106,10 +108,25 @@ fun VocabularyListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VocabularyTopBar() {
-    TopAppBar(
-        title = { Text("Vocabulary List") },
-    )
+fun VocabularyTopBar(viewModel: VocabularyViewModel) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween, // To space them out
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        // TopAppBar as a title
+        TopAppBar(
+            title = { Text("Vocabulary List") },
+            modifier = Modifier.weight(1f), // Make it take available space
+        )
+
+        // Button to toggle sort order
+        Button(
+            onClick = { viewModel.toggleSortOrder() },
+            modifier = Modifier.padding(8.dp),
+        ) {
+            Text("Toggle Sort Order")
+        }
+    }
 }
 
 @Preview(showBackground = true)

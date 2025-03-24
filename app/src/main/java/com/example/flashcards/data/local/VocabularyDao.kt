@@ -34,4 +34,10 @@ interface VocabularyDao {
 
     @Query("UPDATE vocabulary SET score = score - 1 WHERE id = :wordId AND score > 0")
     suspend fun decreaseScore(wordId: Int)
+
+    @Query("SELECT * FROM vocabulary ORDER BY score DESC")
+    suspend fun getAllWordsSortedByScoreDesc(): List<Vocabulary>
+
+    @Query("SELECT * FROM vocabulary ORDER BY score ASC")
+    suspend fun getAllWordsSortedByScoreAsc(): List<Vocabulary>
 }
