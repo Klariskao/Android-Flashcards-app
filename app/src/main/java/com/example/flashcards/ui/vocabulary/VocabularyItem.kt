@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.flashcards.data.model.Category
 import com.example.flashcards.data.model.Vocabulary
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -63,7 +64,7 @@ fun VocabularyItem(
             Text(
                 text = "Score: ${word.score}",
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = Color.Gray,
             )
             IconButton(onClick = onFavoriteClick) {
                 Icon(
@@ -87,7 +88,13 @@ fun VocabularyItem(
 @Composable
 fun PreviewVocabularyItem() {
     VocabularyItem(
-        Vocabulary(id = 1, koreanWord = "사과", englishMeaning = "Apple", isFavorite = true),
+        Vocabulary(
+            id = 1,
+            koreanWord = "사과",
+            englishMeaning = "Apple",
+            isFavorite = true,
+            category = Category.VERBS,
+        ),
         {},
         {},
         { x -> },

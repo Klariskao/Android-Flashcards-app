@@ -81,8 +81,8 @@ fun VocabularyListScreen(
     if (showDialog) {
         AddWordDialog(
             onDismiss = { showDialog = false },
-            onSave = { korean, english ->
-                viewModel.addWord(korean, english)
+            onSave = { korean, english, category ->
+                viewModel.addWord(korean, english, category)
                 showDialog = false
             },
         )

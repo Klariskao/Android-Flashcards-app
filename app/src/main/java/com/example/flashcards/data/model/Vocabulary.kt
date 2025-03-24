@@ -8,7 +8,7 @@ data class Vocabulary(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val koreanWord: String,
     val englishMeaning: String,
-    val category: String = "General",
+    val category: Category,
     val isFavorite: Boolean = false,
     val score: Int = 0,
 )

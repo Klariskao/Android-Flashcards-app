@@ -2,6 +2,7 @@ package com.example.flashcards.ui.vocabulary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.flashcards.data.model.Category
 import com.example.flashcards.data.model.Vocabulary
 import com.example.flashcards.repository.VocabularyRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,17 +49,18 @@ class VocabularyViewModel(
     }
 
     fun addWord(
-        korean: String,
-        english: String,
+        koreanWord: String,
+        englishMeaning: String,
+        category: Category,
     ) {
+        val newWord =
+            Vocabulary(
+                koreanWord = koreanWord,
+                englishMeaning = englishMeaning,
+                category = category,
+            )
+
         viewModelScope.launch {
-            val newWord =
-                Vocabulary(
-                    id = 0, // Room will auto-generate ID
-                    koreanWord = korean,
-                    englishMeaning = english,
-                    isFavorite = false,
-                )
             repository.insertWord(newWord)
         }
     }

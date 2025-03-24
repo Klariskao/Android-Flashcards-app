@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.flashcards.data.model.Category
 import com.example.flashcards.data.model.Vocabulary
 
 @Composable
@@ -44,7 +45,7 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = viewModel()) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Flashcard(word = word)
 
@@ -52,8 +53,11 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = viewModel()) {
 
             Row {
                 Button(
-                    onClick = { viewModel.markWrong(word); currentIndex = (currentIndex + 1) % words.size },
-                    modifier = Modifier.weight(1f)
+                    onClick = {
+                        viewModel.markWrong(word)
+                        currentIndex = (currentIndex + 1) % words.size
+                    },
+                    modifier = Modifier.weight(1f),
                 ) {
                     Text("❌ Wrong")
                 }
@@ -61,8 +65,11 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = viewModel()) {
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Button(
-                    onClick = { viewModel.markRight(word); currentIndex = (currentIndex + 1) % words.size },
-                    modifier = Modifier.weight(1f)
+                    onClick = {
+                        viewModel.markRight(word)
+                        currentIndex = (currentIndex + 1) % words.size
+                    },
+                    modifier = Modifier.weight(1f),
                 ) {
                     Text("✅ Right")
                 }
@@ -78,35 +85,37 @@ fun Flashcard(word: Vocabulary) {
     var flipped by remember { mutableStateOf(false) }
     val rotation by animateFloatAsState(
         targetValue = if (flipped) 180f else 0f,
-        animationSpec = tween(durationMillis = 500), label = ""
+        animationSpec = tween(durationMillis = 500),
+        label = "",
     )
 
     Box(
-        modifier = Modifier
-            .size(250.dp, 150.dp)
-            .graphicsLayer {
-                rotationY = rotation
-                cameraDistance = 8 * density
-            }
-            .shadow(8.dp, shape = RoundedCornerShape(10.dp))
-            .clickable { flipped = !flipped }
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier
+                .size(250.dp, 150.dp)
+                .graphicsLayer {
+                    rotationY = rotation
+                    cameraDistance = 8 * density
+                }.shadow(8.dp, shape = RoundedCornerShape(10.dp))
+                .clickable { flipped = !flipped }
+                .padding(16.dp),
+        contentAlignment = Alignment.Center,
     ) {
         if (rotation < 90f) {
             Text(
                 text = word.koreanWord,
                 style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         } else {
             Text(
                 text = word.englishMeaning,
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.graphicsLayer {
-                    rotationY = 180f
-                }
+                modifier =
+                    Modifier.graphicsLayer {
+                        rotationY = 180f
+                    },
             )
         }
     }
@@ -115,5 +124,12 @@ fun Flashcard(word: Vocabulary) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewFlashcard() {
-    Flashcard(word = Vocabulary(koreanWord = "사과", englishMeaning = "Apple"))
+    Flashcard(
+        word =
+            Vocabulary(
+                koreanWord = "사과",
+                englishMeaning = "Apple",
+                category = Category.UNKNOWN,
+            ),
+    )
 }
