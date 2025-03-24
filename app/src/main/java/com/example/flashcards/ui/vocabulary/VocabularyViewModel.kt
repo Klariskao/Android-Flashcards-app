@@ -16,7 +16,8 @@ class VocabularyViewModel(
     private val _vocabularyList = MutableStateFlow<List<Vocabulary>>(emptyList())
     val vocabularyList: StateFlow<List<Vocabulary>> = _vocabularyList
 
-    private var isDescending = true
+    private val _isDescending = MutableStateFlow(false)
+    val isDescending: StateFlow<Boolean> = _isDescending
 
     init {
         loadVocabulary()
@@ -31,8 +32,8 @@ class VocabularyViewModel(
     }
 
     fun toggleSortOrder() {
-        isDescending = !isDescending
-        getWordsSortedByScore(isDescending)
+        _isDescending.value = !_isDescending.value
+        getWordsSortedByScore(_isDescending.value)
     }
 
     fun toggleFavorite(word: Vocabulary) {

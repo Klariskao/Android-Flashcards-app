@@ -5,10 +5,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -40,9 +43,10 @@ fun VocabularyListScreen(
     val words by viewModel.vocabularyList.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var selectedWord by remember { mutableStateOf<Vocabulary?>(null) }
+    val isDescending by viewModel.isDescending.collectAsState()
 
     Scaffold(
-        topBar = { VocabularyTopBar(viewModel) },
+        topBar = { VocabularyTopBar(viewModel, isDescending) },
         floatingActionButton = {
             FloatingActionButton(onClick = { showDialog = true }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Word")
@@ -108,7 +112,10 @@ fun VocabularyListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VocabularyTopBar(viewModel: VocabularyViewModel) {
+fun VocabularyTopBar(
+    viewModel: VocabularyViewModel,
+    isDescending: Boolean,
+) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween, // To space them out
         modifier = Modifier.fillMaxWidth(),
@@ -124,7 +131,16 @@ fun VocabularyTopBar(viewModel: VocabularyViewModel) {
             onClick = { viewModel.toggleSortOrder() },
             modifier = Modifier.padding(8.dp),
         ) {
-            Text("Toggle Sort Order")
+            Icon(
+                imageVector =
+                    if (isDescending) {
+                        Icons.Default.KeyboardArrowUp
+                    } else {
+                        Icons.Default.KeyboardArrowDown
+                    },
+                contentDescription = "Sort Order",
+                modifier = Modifier.size(20.dp),
+            )
         }
     }
 }
