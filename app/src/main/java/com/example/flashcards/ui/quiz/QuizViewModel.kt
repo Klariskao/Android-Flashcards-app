@@ -20,13 +20,23 @@ class QuizViewModel(
     private var allWords: List<Vocabulary> = emptyList()
     private var timerJob: Job? = null
     private val maxQuestions = 10 // End quiz after 10 questions
+    private var currentWord: Vocabulary? = null
+    private var isQuizStarted = false // Flag to track if the quiz has started
 
     init {
+        // Initialize words when repository sends them but don't start the quiz here.
         viewModelScope.launch {
             repository.allWords.collect { words ->
                 allWords = words
-                nextQuestion()
             }
+        }
+    }
+
+    // Start the quiz (called by UI)
+    fun startQuiz() {
+        if (!isQuizStarted) {
+            isQuizStarted = true
+            nextQuestion()
         }
     }
 
@@ -39,35 +49,31 @@ class QuizViewModel(
         }
 
         if (allWords.isNotEmpty()) {
-            val randomWord = allWords.random()
+            currentWord = allWords.random()
             val isKoreanToEnglish =
                 Random.nextBoolean() // 50% chance of Korean → English or vice versa
 
             val correctAnswer =
-                if (isKoreanToEnglish) randomWord.englishMeaning else randomWord.koreanWord
+                if (isKoreanToEnglish) currentWord!!.englishMeaning else currentWord!!.koreanWord
             val incorrectAnswers =
                 allWords
-                    .filter { it.id != randomWord.id }
+                    .filter { it.id != currentWord!!.id }
                     .shuffled()
                     .take(5) // Select 5 random incorrect answers
                     .map { if (isKoreanToEnglish) it.englishMeaning else it.koreanWord }
 
             _quizState.value =
-                QuizState(
-                    currentWord = if (isKoreanToEnglish) randomWord.koreanWord else randomWord.englishMeaning,
+                _quizState.value.copy(
+                    currentWord = if (isKoreanToEnglish) currentWord!!.koreanWord else currentWord!!.englishMeaning,
                     correctAnswer = correctAnswer,
                     options = (incorrectAnswers + correctAnswer).shuffled(), // Shuffle options
+                    selectedAnswer = null,
                     isKoreanToEnglish = isKoreanToEnglish,
                     questionCount = _quizState.value.questionCount + 1,
                 )
 
             startTimer()
         }
-    }
-
-    fun restartQuiz() {
-        _quizState.value = QuizState()
-        nextQuestion()
     }
 
     private fun startTimer() {
@@ -80,29 +86,46 @@ class QuizViewModel(
                     if (i == 0) {
                         _quizState.value = _quizState.value.copy(isTimeUp = true)
                         delay(1000L) // Show "Time’s Up!" for 1 sec
-                        nextQuestion()
+                        nextQuestion() // Move to the next question after time is up
                     }
                 }
             }
     }
 
+    // Call this function when an answer is selected
     fun checkAnswer(selectedAnswer: String) {
         timerJob?.cancel() // Stop the timer if the user answers early
 
-        _quizState.value =
-            _quizState.value.copy(
-                selectedAnswer = selectedAnswer,
-                score = if (selectedAnswer == _quizState.value.correctAnswer) {
-                    _quizState.value.score + 1
-                }
-                else {
-                    _quizState.value.score
-                },
-            )
+        val isCorrect = selectedAnswer == _quizState.value.correctAnswer
+        val updatedScore = if (isCorrect) _quizState.value.score + 1 else _quizState.value.score
 
         viewModelScope.launch {
-            delay(1000L) // Pause for 1 second to show feedback
-            nextQuestion()
+            currentWord?.let { word ->
+                if (isCorrect) {
+                    repository.increaseScore(word.id)
+                } else {
+                    repository.decreaseScore(word.id)
+                }
+            }
+
+            _quizState.value =
+                _quizState.value.copy(
+                    selectedAnswer = selectedAnswer,
+                    score = updatedScore,
+                )
         }
+
+        // Wait 1 second before going to the next question
+        viewModelScope.launch {
+            delay(1000)
+            nextQuestion() // Trigger next question after a delay
+        }
+    }
+
+    // Restart the quiz
+    fun restartQuiz() {
+        _quizState.value = QuizState()
+        isQuizStarted = false
+        startQuiz() // Start the quiz over after resetting
     }
 }

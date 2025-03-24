@@ -28,4 +28,10 @@ interface VocabularyDao {
 
     @Query("SELECT * FROM vocabulary WHERE category = :category")
     fun getWordsByCategory(category: String): Flow<List<Vocabulary>>
+
+    @Query("UPDATE vocabulary SET score = score + 1 WHERE id = :wordId")
+    suspend fun increaseScore(wordId: Int)
+
+    @Query("UPDATE vocabulary SET score = score - 1 WHERE id = :wordId AND score > 0")
+    suspend fun decreaseScore(wordId: Int)
 }

@@ -22,5 +22,13 @@ class VocabularyRepository(
         vocabularyDao.deleteWord(word)
     }
 
+    suspend fun increaseScore(wordId: Int) {
+        vocabularyDao.increaseScore(wordId)
+    }
+
+    suspend fun decreaseScore(wordId: Int) {
+        vocabularyDao.decreaseScore(wordId)
+    }
+
     fun getWordsByCategory(category: String): Flow<List<Vocabulary>> = vocabularyDao.getWordsByCategory(category)
 }

@@ -43,6 +43,10 @@ fun QuizScreen(
 ) {
     val quizState by viewModel.quizState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.startQuiz()
+    }
+
     if (quizState.isGameOver) {
         LaunchedEffect(Unit) {
             navController.navigate("game_over/${quizState.score}")

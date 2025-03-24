@@ -4,7 +4,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -21,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.flashcards.data.model.Vocabulary
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -55,6 +58,13 @@ fun VocabularyItem(
                 )
                 Text(text = word.englishMeaning, color = Color.Gray)
             }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Score: ${word.score}",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
             IconButton(onClick = onFavoriteClick) {
                 Icon(
                     imageVector = if (word.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
