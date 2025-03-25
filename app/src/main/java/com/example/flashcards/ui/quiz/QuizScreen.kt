@@ -121,6 +121,7 @@ fun QuizScreen(
                                     when {
                                         quizState.selectedAnswer == option && option == quizState.correctAnswer -> Color.Green
                                         quizState.selectedAnswer == option && option != quizState.correctAnswer -> Color.Red
+                                        quizState.correctAnswerShown && option == quizState.correctAnswer -> Color.Green
                                         else -> MaterialTheme.colorScheme.primaryContainer
                                     },
                             ),

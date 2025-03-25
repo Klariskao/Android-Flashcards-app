@@ -70,6 +70,7 @@ class QuizViewModel(
                     selectedAnswer = null,
                     isKoreanToEnglish = isKoreanToEnglish,
                     questionCount = _quizState.value.questionCount + 1,
+                    correctAnswerShown = false,
                 )
 
             startTimer()
@@ -111,12 +112,11 @@ class QuizViewModel(
             _quizState.value =
                 _quizState.value.copy(
                     selectedAnswer = selectedAnswer,
+                    correctAnswerShown = true,
                     score = updatedScore,
                 )
-        }
 
-        // Wait 1 second before going to the next question
-        viewModelScope.launch {
+            // Wait 1 second before going to the next question
             delay(1000)
             nextQuestion() // Trigger next question after a delay
         }

@@ -11,4 +11,5 @@ data class QuizState(
     val isTimeUp: Boolean = false,
     val questionCount: Int = 0,
     val isGameOver: Boolean = false,
+    val correctAnswerShown: Boolean = false,
 )
