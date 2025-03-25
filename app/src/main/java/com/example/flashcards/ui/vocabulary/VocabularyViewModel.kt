@@ -6,8 +6,11 @@ import com.example.flashcards.data.model.Category
 import com.example.flashcards.data.model.Vocabulary
 import com.example.flashcards.repository.VocabularyRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class VocabularyViewModel(
@@ -18,6 +21,31 @@ class VocabularyViewModel(
 
     private val _isDescending = MutableStateFlow(false)
     val isDescending: StateFlow<Boolean> = _isDescending
+
+    private val _showOnlyFavorites = MutableStateFlow(false)
+    val showOnlyFavorites: StateFlow<Boolean> = _showOnlyFavorites
+
+    // Combine repository data with sorting & filtering logic
+    val words: StateFlow<List<Vocabulary>> =
+        combine(
+            vocabularyList,
+            _isDescending,
+            _showOnlyFavorites,
+        ) { list, isDescending, showOnlyFavorites ->
+            var filteredList = list
+
+            // Apply Favorite Filtering
+            if (showOnlyFavorites) {
+                filteredList = filteredList.filter { it.isFavorite }
+            }
+
+            // Apply Sorting
+            if (isDescending) {
+                filteredList.sortedByDescending { it.score }
+            } else {
+                filteredList.sortedBy { it.score }
+            }
+        }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     init {
         loadVocabulary()
@@ -33,7 +61,10 @@ class VocabularyViewModel(
 
     fun toggleSortOrder() {
         _isDescending.value = !_isDescending.value
-        getWordsSortedByScore(_isDescending.value)
+    }
+
+    fun toggleFavoriteFilter() {
+        _showOnlyFavorites.value = !_showOnlyFavorites.value
     }
 
     fun toggleFavorite(word: Vocabulary) {

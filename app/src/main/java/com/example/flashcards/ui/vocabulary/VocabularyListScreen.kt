@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
@@ -26,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -40,13 +43,14 @@ fun VocabularyListScreen(
     viewModel: VocabularyViewModel = viewModel(),
     navController: NavController,
 ) {
-    val words by viewModel.vocabularyList.collectAsState()
+    val words by viewModel.words.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var selectedWord by remember { mutableStateOf<Vocabulary?>(null) }
     val isDescending by viewModel.isDescending.collectAsState()
+    val showOnlyFavorites by viewModel.showOnlyFavorites.collectAsState()
 
     Scaffold(
-        topBar = { VocabularyTopBar(viewModel, isDescending) },
+        topBar = { VocabularyTopBar(viewModel, isDescending, showOnlyFavorites) },
         floatingActionButton = {
             FloatingActionButton(onClick = { showDialog = true }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Word")
@@ -115,6 +119,7 @@ fun VocabularyListScreen(
 fun VocabularyTopBar(
     viewModel: VocabularyViewModel,
     isDescending: Boolean,
+    showOnlyFavorites: Boolean,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween, // To space them out
@@ -140,6 +145,24 @@ fun VocabularyTopBar(
                     },
                 contentDescription = "Sort Order",
                 modifier = Modifier.size(20.dp),
+            )
+        }
+
+        // Filter by Favorite Button
+        Button(
+            onClick = { viewModel.toggleFavoriteFilter() },
+            modifier = Modifier.padding(8.dp),
+        ) {
+            Icon(
+                imageVector =
+                    if (showOnlyFavorites) {
+                        Icons.Default.Favorite
+                    } else {
+                        Icons.Default.FavoriteBorder
+                    },
+                contentDescription = "Filter by Favorites",
+                modifier = Modifier.size(20.dp),
+                tint = if (showOnlyFavorites) Color.Red else Color.White,
             )
         }
     }
