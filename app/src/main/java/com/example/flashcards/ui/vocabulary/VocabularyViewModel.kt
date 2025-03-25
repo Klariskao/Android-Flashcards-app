@@ -25,14 +25,23 @@ class VocabularyViewModel(
     private val _showOnlyFavorites = MutableStateFlow(false)
     val showOnlyFavorites: StateFlow<Boolean> = _showOnlyFavorites
 
+    private val _selectedCategory = MutableStateFlow<Category?>(null)
+    val selectedCategory: StateFlow<Category?> = _selectedCategory
+
     // Combine repository data with sorting & filtering logic
     val words: StateFlow<List<Vocabulary>> =
         combine(
             vocabularyList,
-            _isDescending,
-            _showOnlyFavorites,
-        ) { list, isDescending, showOnlyFavorites ->
+            isDescending,
+            showOnlyFavorites,
+            selectedCategory,
+        ) { list, isDescending, showOnlyFavorites, selectedCategory ->
             var filteredList = list
+
+            // Apply Category Filtering
+            if (selectedCategory != null) {
+                filteredList = filteredList.filter { it.category == selectedCategory }
+            }
 
             // Apply Favorite Filtering
             if (showOnlyFavorites) {
@@ -65,6 +74,10 @@ class VocabularyViewModel(
 
     fun toggleFavoriteFilter() {
         _showOnlyFavorites.value = !_showOnlyFavorites.value
+    }
+
+    fun selectCategory(category: Category?) {
+        _selectedCategory.value = category
     }
 
     fun toggleFavorite(word: Vocabulary) {
@@ -101,6 +114,7 @@ class VocabularyViewModel(
         viewModelScope.launch {
             repository.updateWord(updatedWord)
         }
+        loadVocabulary()
     }
 
     private fun getWordsSortedByScore(isDecs: Boolean) {

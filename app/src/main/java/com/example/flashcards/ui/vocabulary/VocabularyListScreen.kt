@@ -1,6 +1,7 @@
 package com.example.flashcards.ui.vocabulary
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,10 +15,14 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -34,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.flashcards.data.model.Category
 import com.example.flashcards.data.model.Vocabulary
 import com.example.flashcards.repository.VocabularyRepository
 import com.example.flashcards.ui.MockVocabularyDao
@@ -101,11 +107,12 @@ fun VocabularyListScreen(
         EditWordDialog(
             word = selectedWord!!,
             onDismiss = { selectedWord = null },
-            onSave = { korean, english ->
+            onSave = { korean, english, category ->
                 viewModel.updateWord(
                     selectedWord!!.copy(
                         koreanWord = korean,
                         englishMeaning = english,
+                        category = category,
                     ),
                 )
                 selectedWord = null
@@ -125,6 +132,8 @@ fun VocabularyTopBar(
         horizontalArrangement = Arrangement.SpaceBetween, // To space them out
         modifier = Modifier.fillMaxWidth(),
     ) {
+        var expanded by remember { mutableStateOf(false) }
+
         // TopAppBar as a title
         TopAppBar(
             title = { Text("Vocabulary List") },
@@ -164,6 +173,42 @@ fun VocabularyTopBar(
                 modifier = Modifier.size(20.dp),
                 tint = if (showOnlyFavorites) Color.Red else Color.White,
             )
+        }
+
+        // Category Filter Button
+        Box(
+            modifier = Modifier.padding(top = 8.dp),
+        ) {
+            IconButton(
+                onClick = { expanded = true },
+            ) {
+                Icon(
+                    Icons.Default.Menu,
+                    contentDescription = "Filter by Category",
+                )
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+            ) {
+                DropdownMenuItem(
+                    text = { Text("All Categories") },
+                    onClick = {
+                        viewModel.selectCategory(null)
+                        expanded = false
+                    },
+                )
+                Category.entries.forEach { category ->
+                    DropdownMenuItem(
+                        text = { Text(category.name) },
+                        onClick = {
+                            viewModel.selectCategory(category)
+                            expanded = false
+                        },
+                    )
+                }
+            }
         }
     }
 }
