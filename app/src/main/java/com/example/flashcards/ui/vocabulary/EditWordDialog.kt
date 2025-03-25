@@ -30,7 +30,7 @@ import com.example.flashcards.data.model.Vocabulary
 fun EditWordDialog(
     word: Vocabulary,
     onDismiss: () -> Unit,
-    onSave: (String, String) -> Unit,
+    onSave: (String, String, Category) -> Unit,
 ) {
     var koreanWord by remember { mutableStateOf(word.koreanWord) }
     var englishMeaning by remember { mutableStateOf(word.englishMeaning) }
@@ -60,9 +60,9 @@ fun EditWordDialog(
                     Text(
                         text = "Category: ${selectedCategory.displayName}",
                         modifier =
-                        Modifier
-                            .clickable { expanded = true }
-                            .padding(16.dp),
+                            Modifier
+                                .clickable { expanded = true }
+                                .padding(16.dp),
                         style = MaterialTheme.typography.bodyMedium,
                     )
 
@@ -86,11 +86,13 @@ fun EditWordDialog(
             }
         },
         confirmButton = {
-            Button(onClick = {
-                if (koreanWord.isNotBlank() && englishMeaning.isNotBlank()) {
-                    onSave(koreanWord, englishMeaning)
-                }
-            }) {
+            Button(
+                onClick = {
+                    if (koreanWord.isNotBlank() && englishMeaning.isNotBlank()) {
+                        onSave(koreanWord, englishMeaning, selectedCategory)
+                    }
+                },
+            ) {
                 Text("Save")
             }
         },
@@ -114,6 +116,6 @@ fun PreviewEditWordDialog() {
             category = Category.UNKNOWN,
         ),
         {},
-        { x, y -> },
+        { x, y, z -> },
     )
 }
