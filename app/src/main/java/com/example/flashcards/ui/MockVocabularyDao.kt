@@ -37,6 +37,8 @@ class MockVocabularyDao : VocabularyDao {
 
     override fun getAllWords(): Flow<List<Vocabulary>> = sampleData
 
+    override suspend fun getWordCount(): Int = 0
+
     override fun getFavoriteWords(): Flow<List<Vocabulary>> = emptyFlow()
 
     override fun getWordsByCategory(category: String): Flow<List<Vocabulary>> = emptyFlow()

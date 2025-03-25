@@ -62,6 +62,7 @@ class VocabularyViewModel(
 
     private fun loadVocabulary() {
         viewModelScope.launch {
+            repository.insertDefaultWords()
             repository.allWords.collectLatest { words ->
                 _vocabularyList.value = words
             }

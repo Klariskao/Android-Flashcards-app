@@ -14,6 +14,12 @@ class VocabularyRepository(
         vocabularyDao.insertWord(word)
     }
 
+    suspend fun insertDefaultWords() {
+        if (vocabularyDao.getWordCount() == 0) { // Only insert if empty
+            PredefinedVocabulary.words.forEach { vocabularyDao.insertWord(it) }
+        }
+    }
+
     suspend fun updateWord(word: Vocabulary) {
         vocabularyDao.updateWord(word)
     }

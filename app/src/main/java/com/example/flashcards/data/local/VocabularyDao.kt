@@ -23,6 +23,9 @@ interface VocabularyDao {
     @Query("SELECT * FROM vocabulary ORDER BY koreanWord ASC")
     fun getAllWords(): Flow<List<Vocabulary>>
 
+    @Query("SELECT COUNT(*) FROM vocabulary")
+    suspend fun getWordCount(): Int
+
     @Query("SELECT * FROM vocabulary WHERE isFavorite = 1")
     fun getFavoriteWords(): Flow<List<Vocabulary>>
 
