@@ -34,7 +34,7 @@ fun EditWordDialog(
 ) {
     var koreanWord by remember { mutableStateOf(word.koreanWord) }
     var englishMeaning by remember { mutableStateOf(word.englishMeaning) }
-    var selectedCategory by remember { mutableStateOf(Category.UNKNOWN) }
+    var selectedCategory by remember { mutableStateOf(word.category) }
 
     val categories = Category.entries.toTypedArray()
 
